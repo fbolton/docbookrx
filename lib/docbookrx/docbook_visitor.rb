@@ -170,7 +170,7 @@ class DocbookVisitor
       end
       if ! out.nil? && @in_table
         out.gsub(/\|/, '\|')
-      else 
+      else
         out
       end
     else
@@ -304,7 +304,7 @@ class DocbookVisitor
     end
 
     case method.to_s
-    when "visit_itemizedlist", "visit_orderedlist", 
+    when "visit_itemizedlist", "visit_orderedlist",
          "visit_procedure", "visit_substeps", "visit_stepalternatives"
       @list_depth += 1
     when "visit_table", "visit_informaltable"
@@ -341,7 +341,7 @@ class DocbookVisitor
 
       @last_added_was_special = false
       case method_name
-      when "visit_para", "visit_text", "visit_simpara", 
+      when "visit_para", "visit_text", "visit_simpara",
            "visit_emphasis", "visit_link"
       else
         unless ( FORMATTING_NAMES.include? node.name ) || ( ["uri", "ulink"].include? node.name )
@@ -442,7 +442,7 @@ class DocbookVisitor
     append_line (authors * '; ') unless authors.empty?
     date_line = nil
     if (revnumber_node = node.at_css('revhistory revnumber', 'releaseinfo'))
-      date_line = %(v#{revnumber_node.text}, ) 
+      date_line = %(v#{revnumber_node.text}, )
     end
     if (date_node = node.at_css('> date', '> pubdate'))
       append_line %(#{date_line}#{date_node.text})
@@ -674,7 +674,7 @@ class DocbookVisitor
 
   # FIXME this method needs cleanup, remove hardcoded logic!
   def visit_listitem node
-    marker = (node.parent.name == 'orderedlist' || node.parent.name == 'procedure' ? '.' * @list_depth : 
+    marker = (node.parent.name == 'orderedlist' || node.parent.name == 'procedure' ? '.' * @list_depth :
       (node.parent.name == 'stepalternatives' ? 'a.' : '*' * @list_depth))
     append_text marker
 
@@ -797,15 +797,15 @@ class DocbookVisitor
     # FIXME adds an extra blank line before first item
     #append_blank_line unless (previous = node.previous_element) && previous.name == 'title'
     append_blank_line
-    
+
     text = format_text(node.at_css node, '> term')
-    text.each do |text_line| 
+    text.each do |text_line|
       text_line.split(EOL).each_with_index do |line,i|
         line = line.gsub IndentationRx, ''
         if line.length > 0
-          if i == 0 
+          if i == 0
             append_line line
-          else 
+          else
             append_text ( " " + line )
           end
         end
@@ -819,7 +819,7 @@ class DocbookVisitor
       if ( child.name.eql? "text" ) && child.text.rstrip.empty?
         next
       end
-    
+
       local_continuation = false
       unless i == 0 || first_line || (child.name == 'literallayout' || (LIST_NAMES.include? child.name) )
         append_line '+'
@@ -827,18 +827,18 @@ class DocbookVisitor
         @continuation = true
         local_continuation = true
       end
-    
+
       if ( PARA_TAG_NAMES.include? child.name ) || ( child.name.eql? "text" )
         append_blank_line if i == 0
 
         text = format_text child
         item_text = text.shift(1)[0]
-    
+
         item_text = item_text.sub(/\A\+([^\n])/, "+\n\\1")
         if item_text.empty? && text.empty?
           next
         end
-    
+
         item_text.split(EOL).each do |line|
           line = line.gsub IndentationRx, ''
           if line.length > 0
@@ -850,7 +850,7 @@ class DocbookVisitor
             end
           end
         end
-    
+
         unless text.empty?
           append_line '+' unless lines.last == "+"
           lines.concat(text)
@@ -1006,7 +1006,7 @@ class DocbookVisitor
   # FIXME wrap this up in a process_block method
   def visit_sidebar node
     append_blank_line
-    append_block_title node 
+    append_block_title node
     elements = node.elements.to_a
     # TODO make skipping title a part of append_block_title perhaps?
     if elements.size > 0 && elements.first.name == 'title'
@@ -1027,7 +1027,7 @@ class DocbookVisitor
 
   def visit_blockquote node
     append_blank_line
-    append_block_title node 
+    append_block_title node
     elements = node.elements.to_a
     # TODO make skipping title a part of append_block_title perhaps?
     if elements.size > 0 && elements.first.name == 'title'
@@ -1154,7 +1154,7 @@ class DocbookVisitor
         if is_first
           text = text.lstrip
         elsif leading_space_match && !!(text !~ LeadingSpaceRx)
-          if @lines[-1] == "----" || @lines[-1] == "====" 
+          if @lines[-1] == "----" || @lines[-1] == "===="
             text = %(#{leading_space_match[0]}#{text})
           elsif (node_prev = node.previous) &&
                 ! ( node_prev.name == "para" || node_prev.name == "text" ) &&
@@ -1306,11 +1306,11 @@ class DocbookVisitor
     elsif ((prev_node = node.previous) && prev_node.type == TEXT_NODE && PrevAdjacentChar =~ prev_node.text) ||
           ((next_node = node.next) && next_node.type == TEXT_NODE && NextAdjacentChar =~ next_node.text)
       true
-    elsif (prev_node = node.previous) && ! prev_node.children.empty? && 
+    elsif (prev_node = node.previous) && ! prev_node.children.empty? &&
           ( FORMATTING_NAMES.include? prev_node.name ) &&
           (adj_child = prev_node.children[0]).type == TEXT_NODE && PrevAdjacentChar =~ adj_child.text
       true
-    elsif (next_node = node.next) && (! next_node.children.empty? ) && 
+    elsif (next_node = node.next) && (! next_node.children.empty? ) &&
           ( FORMATTING_NAMES.include? next_node.name ) &&
           (adj_child = next_node.children[0]).type == TEXT_NODE && NextAdjacentChar =~ adj_child.text
       true
@@ -1380,7 +1380,7 @@ class DocbookVisitor
       #  end
       #  node.instance_variable_set :@skip, true
       #end
-      #append_text %([#{items * ' > '}]) 
+      #append_text %([#{items * ' > '}])
     when 'guibutton'
       append_text %(btn:[#{node.text}])
     when 'guilabel'
@@ -1417,12 +1417,12 @@ class DocbookVisitor
       end
       append_text %([#{shortname}])
     end
-  
+
     times = (adjacent_character node) ? 2 : 1;
     literal_char = ('`' * times)
     other_format_start = other_format_end = ''
 
-    if @nested_formatting.length > 1 
+    if @nested_formatting.length > 1
       emphasis = false
       bold = false
       for i in 0..@nested_formatting.length-2
@@ -1436,7 +1436,7 @@ class DocbookVisitor
           break
         end
       end
-  
+
       if emphasis && bold
         other_format_start = "**__"
         other_format_end = "__**"
@@ -1450,7 +1450,7 @@ class DocbookVisitor
 
     format_append_text node, literal_char + other_format_start, other_format_end + literal_char
 
-    false 
+    false
   end
 
   alias :visit_guiicon :proceed
