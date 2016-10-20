@@ -387,6 +387,10 @@ class DocbookVisitor
     process_doc node
   end
 
+  def visit_part node
+    process_section node
+  end
+
   def visit_info node
     process_info node if DOCUMENT_NAMES.include? node.parent.name
   end
@@ -509,6 +513,9 @@ class DocbookVisitor
 
   def process_section node, special = nil
     append_blank_line
+    if node.name == 'part'
+      @level -= 1
+    end
     if special
       append_line ':sectnums!:'
       append_blank_line
