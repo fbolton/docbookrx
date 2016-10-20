@@ -59,9 +59,11 @@ class DocbookVisitor
 
   ANONYMOUS_LITERAL_NAMES = ['abbrev', 'acronym', 'code', 'command', 'computeroutput', 'database', 'function', 'literal', 'tag', 'userinput']
 
-  NAMED_LITERAL_NAMES = ['application', 'classname', 'constant', 'envar', 'exceptionname', 'interfacename', 'methodname', 'option', 'parameter', 'property', 'replaceable', 'type', 'varname']
+  NAMED_LITERAL_NAMES = ['application', 'classname', 'constant', 'envar', 'exceptionname', 'interfacename', 'methodname', 'option', 'parameter', 'property', 'type', 'varname']
 
   LITERAL_NAMES = ANONYMOUS_LITERAL_NAMES + NAMED_LITERAL_NAMES
+
+  CURSIVE_NAMES = ['replaceable']
 
   FORMATTING_NAMES = LITERAL_NAMES + ['emphasis']
 
@@ -121,6 +123,8 @@ class DocbookVisitor
         :process_admonition
       elsif LITERAL_NAMES.include? name
         :process_literal
+      elsif CURSIVE_NAMES.include? name
+        :process_cursive
       elsif KEYWORD_NAMES.include? name
         :process_keyword
       elsif PATH_NAMES.include? name
@@ -1457,6 +1461,11 @@ class DocbookVisitor
 
     format_append_text node, literal_char + other_format_start, other_format_end + literal_char
 
+    false
+  end
+
+  def process_cursive node
+    append_text %(_#{format_text node}_)
     false
   end
 
