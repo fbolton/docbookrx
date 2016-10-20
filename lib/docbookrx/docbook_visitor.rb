@@ -1071,6 +1071,15 @@ class DocbookVisitor
   end
 
   def process_table node
+    if (node.at_css '> tgroup')
+      # 'tgroup' is found only in a CALS table
+      process_table_cals node
+    else
+      process_table_html node
+    end
+  end
+
+  def process_table_cals node
     numcols = (node.at_css '> tgroup').attr('cols').to_i
     unless (row_node = (node.at_css '> tgroup > thead > row')).nil?
       if (numheaders = row_node.elements.length) != numcols
@@ -1131,6 +1140,62 @@ class DocbookVisitor
     end
     if foot
       (foot.css '> row > entry').each do |cell|
+        # FIXME needs inline formatting like body
+        append_line %(| #{text cell})
+      end
+    end
+    append_line '|==='
+    false
+  end
+
+  def process_table_html node
+    options = []
+    head_cells = nil
+    if (node.at_css '> thead > tr > td')
+      head_cells = node.css '> thead > tr > td'
+    elsif (node.at_css '> thead > tr > th')
+      head_cells = node.css '> thead > tr > th'
+    elsif (node.at_css '> tr > th')
+      head_cells = node.css '> tr > th'
+    end
+    if head_cells
+      options << 'header'
+    end
+    if (foot = node.at_css '> tfoot')
+      options << 'footer'
+    end
+    options = (options.empty? ? nil : %(options="#{options * ','}"))
+    if options
+      append_line %([#{options}])
+    end
+    append_line '|==='
+    if head_cells
+      append_blank_line
+      head_cells.each do |cell|
+        append_text %(| #{text cell} )
+      end
+    end
+    bodylist = node.css '> tbody'
+    if !bodylist && (node.at_css '> tr')
+      bodylist = [ node ]
+    end
+    bodylist.each do |body|
+      (body.css '> tr').each do |row|
+        # Skip the header row (which was already processed)
+        next if row.at_css '> th'
+        append_blank_line
+        row.elements.each do |cell|
+          if !(element = cell.elements.first)
+            append_line %(| #{text cell})
+          else
+            append_line 'a|'
+            proceed cell
+          end
+        end
+      end
+    end
+    if foot
+      (foot.css '> tr > td').each do |cell|
         # FIXME needs inline formatting like body
         append_line %(| #{text cell})
       end
