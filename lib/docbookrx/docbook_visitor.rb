@@ -514,7 +514,7 @@ class DocbookVisitor
   def process_section node, special = nil
     append_blank_line
     if node.name == 'part'
-      @level -= 1
+      # @level -= 1
     end
     if special
       append_line ':sectnums!:'
