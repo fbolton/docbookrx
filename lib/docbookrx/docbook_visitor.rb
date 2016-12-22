@@ -1730,6 +1730,7 @@ class DocbookVisitor
   def append_ifdef_start_if_condition node
     append_ifdef_if_condition node do |condition|
       append_line "ifdef::#{condition}[]"
+      append_blank_line
     end
   end
 
