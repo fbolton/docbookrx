@@ -699,7 +699,8 @@ class DocbookVisitor
 
   # FIXME this method needs cleanup, remove hardcoded logic!
   def visit_listitem node
-    marker = (node.parent.name == 'orderedlist' || node.parent.name == 'procedure' ? '.' * @list_depth :
+    append_blank_line
+    marker = (node.parent.name == 'orderedlist' || node.parent.name == 'procedure' ? '.' * @list_depth : 
       (node.parent.name == 'stepalternatives' ? 'a.' : '*' * @list_depth))
     append_text marker
 
