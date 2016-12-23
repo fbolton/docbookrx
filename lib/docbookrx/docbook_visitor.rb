@@ -1009,6 +1009,9 @@ class DocbookVisitor
 
   def process_example node
     append_blank_line
+    if (id = (resolve_id node, normalize: @normalize_ids))
+      append_line %([[#{id}]])
+    end
     append_block_title node
     elements = node.elements.to_a
     if elements.size > 0 && elements.first.name == 'title'
