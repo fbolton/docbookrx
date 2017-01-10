@@ -1198,7 +1198,7 @@ class DocbookVisitor
       end
     end
     bodylist = node.css '> tbody'
-    if !bodylist && (node.at_css '> tr')
+    if bodylist.empty? && (node.at_css '> tr')
       bodylist = [ node ]
     end
     bodylist.each do |body|
