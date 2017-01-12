@@ -1111,7 +1111,21 @@ class DocbookVisitor
         warn %(#{numcols} columns specified in table#{title}, but only #{numheaders} headers)
       end
     end
-    cols = ('1' * numcols).split('')
+    unless (node.at_css '> tgroup > colspec').nil?
+      cols = Array.new
+      colspecs = node.css '> tgroup > colspec'
+      colspecs.each do |colspec|
+        if (result = colspec.attr('colwidth').match(/(\d+\.?\d*)\*/))
+          # Multiply value by 100 to work around the fact that AsciiDoc does not support decimal value for colwidth
+          colwidth = (result.captures.first.to_f * 100.0).to_i
+        else
+          colwidth = '100'
+        end
+        cols << colwidth
+      end
+    else
+      cols = ('1' * numcols).split('')
+    end
     body = node.at_css '> tgroup > tbody'
     unless body.nil?
       row1 = body.at_css '> row'
