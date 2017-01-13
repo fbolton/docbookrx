@@ -101,6 +101,7 @@ class DocbookVisitor
     @in_table = false
     @nested_formatting = []
     @last_added_was_special = false
+    @docid = ''
   end
 
   ## Traversal methods
@@ -417,6 +418,10 @@ class DocbookVisitor
   end
 
   def process_doc node
+    if (id = (resolve_id node, normalize: @normalize_ids))
+      append_line %([[#{id}]])
+      @docid = id
+    end
     @level += 1
     proceed node, :using_elements => true
     @level -= 1
@@ -1254,6 +1259,21 @@ class DocbookVisitor
       append_text %(<<#{id},#{lazy_quote label}>>)
     end
     lines.concat(text) unless text.empty?
+    false
+  end
+
+  def visit_olink node
+    targetdoc = node.attr('targetdoc')
+    targetptr = node.attr('targetptr')
+    id = @normalize_ids ? (normalize_id targetptr) : targetptr
+    if targetdoc
+      docid = @normalize_ids ? (normalize_id targetdoc) : targetdoc
+    end
+    if (!docid.nil? && (docid != @docid))
+      append_text %(link:olink:#{docid}/#{id}[])
+    else
+      append_text %(<<#{id}>>)
+    end
     false
   end
 
