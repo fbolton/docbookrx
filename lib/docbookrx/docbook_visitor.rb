@@ -119,6 +119,8 @@ class DocbookVisitor
       :visit_pi
     when ENTITY_REF_NODE
       :visit_entity_ref
+    when CDATA_SECTION_NODE
+      :visit_cdata_section
     else
       if ADMONITION_NAMES.include? name
         :process_admonition
@@ -1735,6 +1737,11 @@ class DocbookVisitor
       # <?asciidoc-hr?> will be wrapped in a para/simpara
       append_text '\'' * 3
     end
+    false
+  end
+  
+  def visit_cdata_section node
+    append_text node.text
     false
   end
 
