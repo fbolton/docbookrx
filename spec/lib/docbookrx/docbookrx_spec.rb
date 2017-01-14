@@ -1133,6 +1133,49 @@ image::images/dummy.png[]
     expect(output).to include(expected)
   end
 
+  it 'converts a CDATA section to text' do
+
+      input = <<-EOS
+  <article xmlns='http://docbook.org/ns/docbook'
+           xmlns:xl="http://www.w3.org/1999/xlink"
+           version="5.0" xml:lang="en">
+    <para>Some inline code containing a CDATA section:
+      <code><![CDATA[<olink targetdoc="foo" targetptr="bar" />]]></code>
+    </para>
+    <programlisting><![CDATA[    <figure xml:id="sample-figure">
+      <title>Local History</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dummy.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+  ]]></programlisting>
+
+  </article>
+      EOS
+
+      expected = <<-EOS.rstrip
+Some inline code containing a CDATA section: `<olink targetdoc="foo" targetptr="bar" />`
+
+[source]
+----
+    <figure xml:id="sample-figure">
+      <title>Local History</title>
+      <mediaobject>
+        <imageobject>
+          <imagedata fileref="images/dummy.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+----
+    EOS
+
+    output = Docbookrx.convert input
+
+    expect(output).to include(expected)
+  end
+
   it 'should correctly convert varlistentry elements with nested lists' do
     input = <<-EOS
 <article xmlns='http://docbook.org/ns/docbook'
