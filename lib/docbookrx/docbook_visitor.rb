@@ -1182,7 +1182,8 @@ class DocbookVisitor
       cols = Array.new
       colspecs = node.css '> tgroup > colspec'
       colspecs.each do |colspec|
-        if (result = colspec.attr('colwidth').match(/(\d+\.?\d*)\*/))
+        colwidth_attr = colspec.attr('colwidth')
+        if ( !colwidth_attr.nil? && (result = colwidth_attr.match(/(\d+\.?\d*)\*/)) )
           # Multiply value by 100 to work around the fact that AsciiDoc does not support decimal value for colwidth
           colwidth = (result.captures.first.to_f * 100.0).to_i
         else
